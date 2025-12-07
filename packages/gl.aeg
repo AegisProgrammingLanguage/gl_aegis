@@ -1,0 +1,45 @@
+namespace Gl {
+    // Constantes Core Profile
+    var COLOR_BUFFER_BIT = 16384
+    var DEPTH_BUFFER_BIT = 256
+    var ARRAY_BUFFER = 34962
+    var STATIC_DRAW = 35044
+    var TRIANGLES = 4
+    var FLOAT = 5126
+
+    var VERTEX_SHADER = 35633
+    var FRAGMENT_SHADER = 35632
+
+    func load(loader_ptr) { return gl_load(loader_ptr) }
+    func viewport(x, y, w, h) { return gl_viewport(x, y, w, h) }
+    func clearColor(r, g, b, a) { return gl_clear_color(r, g, b, a) }
+    func clear(mask) { return gl_clear(mask) }
+
+    // Shaders
+    func createShader(type) { return gl_create_shader(type) }
+    func shaderSource(id, src) { return gl_shader_source(id, src) }
+    func compileShader(id) { return gl_compile_shader(id) }
+    func createProgram() { return gl_create_program() }
+    func attachShader(prog, shader) { return gl_attach_shader(prog, shader) }
+    func linkProgram(prog) { return gl_link_program(prog) }
+    func useProgram(prog) { return gl_use_program(prog) }
+    func deleteShader(id) { return gl_delete_shader(id) }
+
+    // Buffers
+    func genVertexArrays() { return gl_gen_vertex_arrays() }
+    func bindVertexArray(id) { return gl_bind_vertex_array(id) }
+    func genBuffers() { return gl_gen_buffers() }
+    func bindBuffer(target, id) { return gl_bind_buffer(target, id) }
+    func bufferData(target, data_list, usage) { return gl_buffer_data(target, data_list, usage) }
+
+    // Attribs
+    func vertexAttribPointer(idx, size, type, norm, stride, offset) { return gl_vertex_attrib_pointer(idx, size, type, norm, stride, offset) }
+    func enableVertexAttribArray(idx) { return gl_enable_vertex_attrib_array(idx) }
+
+    // Uniforms
+    func getUniformLocation(program, name) { return get_uniform_location(program, name) }
+    func uniform4f(location, x, y, z, w) { return uniform_4f(location, x, y, z, w) }
+    
+    // Draw
+    func drawArrays(mode, first, count) { return gl_draw_arrays(mode, first, count) }
+}

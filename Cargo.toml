@@ -1,0 +1,16 @@
+[package]
+name = "gl_aegis"
+version = "0.1.0"
+edition = "2024"
+
+[lib]
+crate-type = ["cdylib"]
+
+[[bin]]
+name = "package"
+path = "scripts/build_package.rs"
+
+[dependencies]
+aegis = { path = "../aegis" }
+gl = "0.14"
+glfw = "0.56"
