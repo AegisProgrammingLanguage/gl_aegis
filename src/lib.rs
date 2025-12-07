@@ -31,9 +31,16 @@ pub extern "C" fn _aegis_register(map: &mut HashMap<String, NativeFn>) {
     map.insert("gl_enable_vertex_attrib_array".to_string(), gl_enable_vertex_attrib_array);
 
     // Uniforms
-    map.insert("get_uniform_location".to_string(), gl_get_uniform_location);
-    map.insert("uniform_4f".to_string(), gl_uniform_4f);
+    map.insert("gl_get_uniform_location".to_string(), gl_get_uniform_location);
+    map.insert("gl_uniform_4f".to_string(), gl_uniform_4f);
 
+    // Textures
+    map.insert("gl_gen_textures".to_string(), gl_gen_textures);
+    map.insert("gl_bind_texture".to_string(), gl_bind_texture);
+    map.insert("gl_tex_image_2d".to_string(), gl_tex_image_2d);
+    map.insert("gl_generate_mipmap".to_string(), gl_generate_mipmap);
+    map.insert("gl_tex_parameter_i".to_string(), gl_tex_parameter_i);
+    
     // Draw
     map.insert("gl_draw_arrays".to_string(), gl_draw_arrays);
 }
@@ -49,6 +56,20 @@ fn extract_f32_vec(val: &Value) -> Result<Vec<f32>, String> {
         Ok(vec)
     } else {
         Err("Expected a List of floats".into())
+    }
+}
+
+fn extract_u8_vec(val: &Value) -> Result<Vec<u8>, String> {
+    if let Value::List(rc_list) = val {
+        let list = rc_list.borrow();
+        let mut vec = Vec::with_capacity(list.len());
+        for v in list.iter() {
+            vec.push(v.as_int()? as u8);
+        }
+        Ok(vec)
+    }
+    else {
+        Err("Expected a List of integers (bytes)".into())
     }
 }
 
@@ -286,6 +307,57 @@ fn gl_uniform_4f(args: Vec<Value>) -> Result<Value, String> {
     Ok(Value::Null)
 }
 
+// --- TEXTURES ---
+fn gl_gen_textures(_: Vec<Value>) -> Result<Value, String> {
+    let mut id = 0;
+    unsafe { gl::GenTextures(1, &mut id); }
+    Ok(Value::Integer(id as i64))
+}
+
+fn gl_bind_texture(args: Vec<Value>) -> Result<Value, String> {
+    let target = args[0].as_int()? as u32;
+    let id = args[1].as_int()? as u32;
+    unsafe { gl::BindTexture(target, id); }
+    Ok(Value::Null)
+}
+
+fn gl_tex_image_2d(args: Vec<Value>) -> Result<Value, String> {
+    // Args: target, level, internal_format, width, height, border, format, type, data
+    if args.len() != 9 { return Err("Args: target, level, internal, w, h, border, format, type, data".into()); }
+    
+    let target = args[0].as_int()? as u32;
+    let level = args[1].as_int()? as i32;
+    let internal = args[2].as_int()? as i32;
+    let w = args[3].as_int()? as i32;
+    let h = args[4].as_int()? as i32;
+    let border = args[5].as_int()? as i32;
+    let format = args[6].as_int()? as u32;
+    let type_ = args[7].as_int()? as u32;
+    
+    // Conversion lourde mais nécessaire : List<Value> -> Vec<u8>
+    let data = extract_u8_vec(&args[8])?;
+
+    unsafe {
+        gl::TexImage2D(
+            target, level, internal, w, h, border, format, type_, 
+            data.as_ptr() as *const std::ffi::c_void
+        );
+    }
+    Ok(Value::Null)
+}
+
+fn gl_generate_mipmap(args: Vec<Value>) -> Result<Value, String> {
+    unsafe { gl::GenerateMipmap(args[0].as_int()? as u32); }
+    Ok(Value::Null)
+}
+
+fn gl_tex_parameter_i(args: Vec<Value>) -> Result<Value, String> {
+    let target = args[0].as_int()? as u32;
+    let pname = args[1].as_int()? as u32;
+    let param = args[2].as_int()? as i32;
+    unsafe { gl::TexParameteri(target, pname, param); }
+    Ok(Value::Null)
+}
 
 // --- DRAW ---
 fn gl_draw_arrays(args: Vec<Value>) -> Result<Value, String> {

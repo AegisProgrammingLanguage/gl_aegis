@@ -5,10 +5,22 @@ namespace Gl {
     var ARRAY_BUFFER = 34962
     var STATIC_DRAW = 35044
     var TRIANGLES = 4
+    var TRIANGLE_FAN = 6
     var FLOAT = 5126
 
     var VERTEX_SHADER = 35633
     var FRAGMENT_SHADER = 35632
+
+    var TEXTURE_2D = 3553
+    var RGBA = 6408
+    var UNSIGNED_BYTE = 5121
+    var REPEAT = 10497
+    var LINEAR = 9729
+    var NEAREST = 9728
+    var TEXTURE_WRAP_S = 10242
+    var TEXTURE_WRAP_T = 10243
+    var TEXTURE_MIN_FILTER = 10241
+    var TEXTURE_MAG_FILTER = 10240
 
     func load(loader_ptr) { return gl_load(loader_ptr) }
     func viewport(x, y, w, h) { return gl_viewport(x, y, w, h) }
@@ -37,8 +49,15 @@ namespace Gl {
     func enableVertexAttribArray(idx) { return gl_enable_vertex_attrib_array(idx) }
 
     // Uniforms
-    func getUniformLocation(program, name) { return get_uniform_location(program, name) }
-    func uniform4f(location, x, y, z, w) { return uniform_4f(location, x, y, z, w) }
+    func getUniformLocation(program, name) { return gl_get_uniform_location(program, name) }
+    func uniform4f(location, x, y, z, w) { return gl_uniform_4f(location, x, y, z, w) }
+    
+    // Textures
+    func genTextures() { return gl_gen_textures() }
+    func bindTexture(target, id) { return gl_bind_texture(target, id) }
+    func texImage2D(target, level, internal, w, h, border, format, type, data) { return gl_tex_image_2d(target, level, internal, w, h, border, format, type, data) }
+    func generateMipmap(target) { return gl_generate_mipmap(target) }
+    func texParameteri(target, pname, param) { return gl_tex_parameter_i(target, pname, param) }
     
     // Draw
     func drawArrays(mode, first, count) { return gl_draw_arrays(mode, first, count) }
