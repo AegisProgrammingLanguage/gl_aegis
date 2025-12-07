@@ -76,6 +76,27 @@ fn main() {
         println!("⚠️  Aucun dossier 'packages/' trouvé (seul le binaire sera distribué).");
     }
 
+    // 7. Génération du manifeste aegis.toml pour le paquet
+    println!("📝 Génération du manifeste de paquet...");
+    
+    // Noms théoriques des fichiers pour les autres OS
+    let lib_name_linux = format!("lib{}.so", crate_name);
+    let lib_name_windows = format!("{}.dll", crate_name);
+    let lib_name_macos = format!("lib{}.dylib", crate_name);
+
+    let toml_content = format!(r#"[package]
+name = "{}"
+version = "0.1.0"
+
+[targets]
+linux = "{}"
+windows = "{}"
+macos = "{}"
+"#, crate_name, lib_name_linux, lib_name_windows, lib_name_macos);
+
+    let manifest_path = package_out_dir.join("aegis.toml");
+    fs::write(&manifest_path, toml_content).expect("Impossible de créer le manifeste");
+
     println!("\n✅ SUCCÈS ! Votre package est prêt dans : dist/{}/", crate_name);
 }
 
